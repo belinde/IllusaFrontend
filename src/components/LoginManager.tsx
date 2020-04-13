@@ -43,17 +43,26 @@ const LoginManager = ({
     );
 
     if (user.id !== undefined) {
-        console.log(user.id);
+        if (email) setEmail('');
+        if (password) setPassword('');
         return (
             <Navbar.Text>
                 {user.displayName}
-                <Button onClick={doLogout} className="ml-2" variant="outline-warning" size="sm">Logout</Button>
+                <Button
+                    onClick={doLogout}
+                    className="ml-2"
+                    variant="outline-warning"
+                    size="sm"
+                >
+                    Logout
+                </Button>
             </Navbar.Text>
         );
     }
 
     return (
         <Form inline onSubmit={onSubmit}>
+            {user.errorMessage?<Navbar.Text className="mr-2">{user.errorMessage}</Navbar.Text>:null}
             <FormControl
                 type="email"
                 name="loginEmail"

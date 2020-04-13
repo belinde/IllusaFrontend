@@ -18,8 +18,9 @@ const Anonymous: User = {
     displayName: 'Anonymous',
 };
 
-const USER_SET = 'USER_SET';
-const USER_UNSET = 'USER_UNSET';
+export const USER_SET = 'USER_SET';
+export const USER_UNSET = 'USER_UNSET';
+export const USER_ERROR = 'USER_ERROR';
 
 export const doLogin = (username: string, password: string) =>
     POST(
@@ -32,16 +33,44 @@ export const doLogin = (username: string, password: string) =>
         ({ access_token }) => ({
             type: USER_SET,
             user: decodeJwt(access_token),
+        }),
+        (error: any) => ({
+            type: USER_ERROR,
         })
     );
-export const doLogout = () => ({type: USER_UNSET});
+export const doLogout = () => ({ type: USER_UNSET });
 
-export default (state: User = Anonymous, action: any) => {
+const storageKey = 'user';
+
+const retrieveFromLocalStorage = (): User => {
+    const json = localStorage.getItem(storageKey);
+    if (json) {
+        const decoded = JSON.parse(json);
+        const jwt: { exp: number } = jwt_decode(decoded.token);
+        if (jwt.exp > Date.now() / 1000) {
+            return decoded;
+        }
+    }
+    return Anonymous;
+};
+
+export default (state: User, action: any) => {
     switch (action.type) {
         case USER_SET:
+            localStorage.setItem(storageKey, JSON.stringify(action.user));
             return action.user;
         case USER_UNSET:
+            localStorage.removeItem(storageKey);
             return Anonymous;
+        case USER_ERROR:
+            return {
+                ...Anonymous,
+                errorMessage: 'Invalid email or password',
+            };
+        default:
+            if (!state) {
+                return retrieveFromLocalStorage();
+            }
     }
     return state;
 };
