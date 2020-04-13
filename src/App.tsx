@@ -2,6 +2,7 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import LoginManager from './components/LoginManager';
+import LocationViewer from './components/LocationViewer';
 
 function App() {
     return (
@@ -22,7 +23,7 @@ function App() {
                 </Navbar.Collapse>
             </Navbar>
             <Container fluid style={{ marginTop: 70 }}>
-                The App
+                <LocationViewer />
             </Container>
         </>
     );

@@ -24,18 +24,21 @@ export const ApiCaller: Middleware = (store) => (next) => (
 ) => {
     switch (action.type) {
         case API_CALL:
+            console.info('ApiCaller', action);
             fetch(BASE_URL + action.path, {
                 method: action.method,
                 headers,
-                body: JSON.stringify(action.content),
+                body: action.content ? JSON.stringify(action.content) : null,
             })
                 .then((response) => response.json())
                 .then((decoded) => {
+                    console.info('ApiCaller - success', decoded);
                     if (action.success) {
                         store.dispatch(action.success(decoded));
                     }
                 })
                 .catch((error) => {
+                    console.error('ApiCaller - error', error);
                     if (action.failure) {
                         store.dispatch(action.failure(error));
                     }
