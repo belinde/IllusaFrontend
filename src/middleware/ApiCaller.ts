@@ -1,9 +1,25 @@
 import { Middleware, AnyAction, ActionCreator } from 'redux';
-import { USER_SET, USER_UNSET } from '../state/user';
 
 const BASE_URL = 'https://localhost:8000';
 
 export const API_CALL = 'API_CALL';
+
+let headers:Record<string,string> = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+};
+
+export const setToken = (token: string | null) => {
+    if (token) {
+        headers = {
+            Authentication: 'bearer ' + token,
+            ...headers
+        };
+    } else {
+        let {Authentication, ...otherHeaders} = headers;
+        headers = otherHeaders;
+    }
+};
 
 export interface ApiCallAction extends AnyAction {
     type: 'API_CALL';
@@ -13,11 +29,6 @@ export interface ApiCallAction extends AnyAction {
     success?: ActionCreator<AnyAction>;
     failure?: ActionCreator<AnyAction>;
 }
-
-let headers: Record<string, string> = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-};
 
 export const ApiCaller: Middleware = (store) => (next) => (
     action: ApiCallAction | AnyAction
@@ -43,12 +54,6 @@ export const ApiCaller: Middleware = (store) => (next) => (
                         store.dispatch(action.failure(error));
                     }
                 });
-            break;
-        case USER_SET:
-            headers['Authorization'] = 'bearer ' + action.token;
-            break;
-        case USER_UNSET:
-            delete headers['Authorization'];
             break;
     }
     return next(action);

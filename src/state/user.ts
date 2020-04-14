@@ -1,6 +1,7 @@
 import { User } from '../types';
 import { POST } from '../ajax';
 import jwt_decode from 'jwt-decode';
+import { setToken } from '../middleware/ApiCaller';
 
 const decodeJwt = (token: string): User => {
     console.log('decodeJwt', token);
@@ -34,7 +35,7 @@ export const doLogin = (username: string, password: string) =>
             type: USER_SET,
             user: decodeJwt(access_token),
         }),
-        (error: any) => ({
+        () => ({
             type: USER_ERROR,
         })
     );
@@ -58,17 +59,21 @@ export default (state: User, action: any) => {
     switch (action.type) {
         case USER_SET:
             localStorage.setItem(storageKey, JSON.stringify(action.user));
+            setToken(action.user.token);
             return action.user;
         case USER_UNSET:
+            setToken(null);
             localStorage.removeItem(storageKey);
             return Anonymous;
         case USER_ERROR:
+            setToken(null);
             return {
                 ...Anonymous,
                 errorMessage: 'Invalid email or password',
             };
         default:
             if (!state) {
+                setToken(null);
                 return retrieveFromLocalStorage();
             }
     }

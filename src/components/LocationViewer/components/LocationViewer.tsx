@@ -1,23 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Location } from '../../../types';
 import { ActionCreator, AnyAction } from 'redux';
-import Button from 'react-bootstrap/Button';
-
-const LocationDetail = ({
-    location,
-    loadLocation,
-}: {
-    location: Location | null | undefined;
-    loadLocation: ActionCreator<AnyAction>;
-}) => {
-    if (location)
-        return (
-            <Button key={location.id} onClick={() => loadLocation(location.id)} variant="outline-dark" className="m-1">
-                #{location.id} - {location.label}
-            </Button>
-        );
-    return null;
-};
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import LocationDetail from './LocationDetail';
 
 export const LocationViewer = ({
     location,
@@ -26,48 +13,52 @@ export const LocationViewer = ({
     location: Location;
     loadLocation: ActionCreator<AnyAction>;
 }) => {
+    console.log('ricalcolo locationviewer');
+
     useEffect(() => {
-        console.log('Location viewer - use effect');
         loadLocation(1);
     }, [loadLocation]);
 
+    const load = useCallback(loadLocation, [loadLocation]);
+
     if (!location.id) return null;
 
-    console.log(location);
-
     return (
-        <div>
-            <div>Qui: #{location.id} - {location.label}</div>
-            <div>
-                Sopra:{' '}
+        <Container>
+            <Row>
+                <Col>
+                <strong>Before</strong>
+                <LocationDetail location={location.prev} loadLocation={load} />
+                </Col>
+                <Col>
+                <strong>Parent</strong>
                 <LocationDetail
                     location={location.parent}
-                    loadLocation={loadLocation}
+                    loadLocation={load}
                 />
-            </div>
-            <div>
-                Prima:{' '}
-                <LocationDetail
-                    location={location.prev}
-                    loadLocation={loadLocation}
-                />
-            </div>
-            <div>
-                dopo:{' '}
-                <LocationDetail
-                    location={location.next}
-                    loadLocation={loadLocation}
-                />
-            </div>
-            <div>
-            Figli:
-            {location.children.map((loc) => (
-                <LocationDetail
-                    location={loc}
-                    loadLocation={loadLocation}
-                />
-            ))}
-            </div>
-        </div>
+                </Col>
+                <Col>
+                <strong>After</strong>
+                <LocationDetail location={location.next} loadLocation={load} />
+                </Col>
+            </Row>
+            <Row>
+                <Col xl="8">
+                <h2>#{location.id} - {location.label}</h2>
+                {location.description}
+                </Col>
+                <Col xl="4">
+                    <strong>From here:</strong>
+                    {location.children.map((loc) => (
+                    <LocationDetail
+                        key={loc.id}
+                        location={loc}
+                        loadLocation={load}
+                    />
+                ))}
+                </Col>
+            </Row>
+            
+        </Container>
     );
 };

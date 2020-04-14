@@ -17,6 +17,8 @@ const LoginManager = ({
     doLogin: (username: string, password: string) => void;
     doLogout: () => void;
 }) => {
+    console.log('ricalcolo loginmanager');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -62,7 +64,9 @@ const LoginManager = ({
 
     return (
         <Form inline onSubmit={onSubmit}>
-            {user.errorMessage?<Navbar.Text className="mr-2">{user.errorMessage}</Navbar.Text>:null}
+            {user.errorMessage ? (
+                <Navbar.Text className="mr-2">{user.errorMessage}</Navbar.Text>
+            ) : null}
             <FormControl
                 type="email"
                 name="loginEmail"
