@@ -4,7 +4,7 @@ const BASE_URL = 'https://localhost:8000';
 
 export const API_CALL = 'API_CALL';
 
-let headers:Record<string,string> = {
+let headers: Record<string, string> = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
 };
@@ -12,11 +12,11 @@ let headers:Record<string,string> = {
 export const setToken = (token: string | null) => {
     if (token) {
         headers = {
+            ...headers,
             Authentication: 'bearer ' + token,
-            ...headers
         };
     } else {
-        let {Authentication, ...otherHeaders} = headers;
+        let { Authentication, ...otherHeaders } = headers;
         headers = otherHeaders;
     }
 };
@@ -30,31 +30,27 @@ export interface ApiCallAction extends AnyAction {
     failure?: ActionCreator<AnyAction>;
 }
 
-export const ApiCaller: Middleware = (store) => (next) => (
-    action: ApiCallAction | AnyAction
-) => {
-    switch (action.type) {
-        case API_CALL:
-            console.info('ApiCaller', action);
-            fetch(BASE_URL + action.path, {
-                method: action.method,
-                headers,
-                body: action.content ? JSON.stringify(action.content) : null,
+export const ApiCaller: Middleware = (store) => (next) => (action) => {
+    console.log('Action dispatched:', action.type, action);
+    if (action.type === API_CALL) {
+        fetch(BASE_URL + action.path, {
+            method: action.method,
+            headers,
+            body: action.content ? JSON.stringify(action.content) : null,
+        })
+            .then((response) => response.json())
+            .then((decoded) => {
+                console.info('ApiCaller - success', decoded);
+                if (action.success) {
+                    store.dispatch(action.success(decoded));
+                }
             })
-                .then((response) => response.json())
-                .then((decoded) => {
-                    console.info('ApiCaller - success', decoded);
-                    if (action.success) {
-                        store.dispatch(action.success(decoded));
-                    }
-                })
-                .catch((error) => {
-                    console.error('ApiCaller - error', error);
-                    if (action.failure) {
-                        store.dispatch(action.failure(error));
-                    }
-                });
-            break;
+            .catch((error) => {
+                console.error('ApiCaller - error', error);
+                if (action.failure) {
+                    store.dispatch(action.failure(error));
+                }
+            });
     }
     return next(action);
 };

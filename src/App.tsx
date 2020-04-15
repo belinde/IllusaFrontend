@@ -1,20 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import LoginManager from './components/LoginManager';
 import LocationViewer from './components/LocationViewer';
+import { connect } from 'react-redux';
+import { loadLocation } from './state/location';
+import { ActionCreator, AnyAction } from 'redux';
 
-function App() {
+const App = ({ loadLocation }: { loadLocation: ActionCreator<AnyAction> }) => {
+    useEffect(() => {
+        loadLocation(1);
+    }, [loadLocation]);
+
     return (
         <>
-            <Navbar bg="light" expand="lg" fixed="top">
+            <Navbar bg="light" variant="light" expand="lg" fixed="top">
                 <Navbar.Brand>
                     <img
                         src="/logo.svg"
                         width="30"
                         height="30"
                         className="d-inline-block align-top mr-2"
-                        alt="React Bootstrap logo"
+                        alt="Illusa"
                     />
                     Illusa
                 </Navbar.Brand>
@@ -22,11 +29,26 @@ function App() {
                     <LoginManager />
                 </Navbar.Collapse>
             </Navbar>
-            <Container fluid style={{ marginTop: 70 }}>
+            <Container fluid style={{ marginTop: 70, marginBottom: 70 }}>
                 <LocationViewer />
             </Container>
+            <Navbar bg="light" variant="light" fixed="bottom">
+                <Navbar.Text className="text-muted text-small">
+                    Icons made by{' '}
+                    <a
+                        href="https://www.flaticon.com/authors/popcorns-arts"
+                        title="Icon Pond"
+                    >
+                        Icon Pond
+                    </a>{' '}
+                    from{' '}
+                    <a href="https://www.flaticon.com/" title="Flaticon">
+                        www.flaticon.com
+                    </a>
+                </Navbar.Text>
+            </Navbar>
         </>
     );
-}
+};
 
-export default App;
+export default connect(null, { loadLocation })(App);

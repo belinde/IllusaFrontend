@@ -8,7 +8,7 @@ export const setLocation = (location: Location) => ({
     location,
 });
 
-export const loadLocation = (id: number) => {
+export const loadLocation = (id: number = 1) => {
     console.log('loadLocation', id)
     return GET('/location/' + id, (location) => setLocation(location));
 };

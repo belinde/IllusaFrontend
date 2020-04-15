@@ -4,18 +4,23 @@ export interface User {
     email?: string;
     roles?: string[];
     token?: string;
-    errorMessage?: string
+    errorMessage?: string;
 }
 
-export interface Location {
-        id: number;
-        label: string,
-        description: string|null
-        attributes: string[],
-        size: number,
-        contains: number,
-        parent?: Location|null,
-        prev?: Location|null,
-        next?: Location|null,
-        children: Location[]
+export type LocationType = 'cosmos' | 'plane' | 'region'
+
+export interface LocationReference {
+    id: number;
+    type: LocationType;
+    label: string;
+    description: string;
+    attributes: string[];
+}
+
+export interface Location extends LocationReference {
+    editable: boolean;
+    parent: LocationReference;
+    prev: LocationReference | null;
+    next: LocationReference | null;
+    children: LocationReference[];
 }
