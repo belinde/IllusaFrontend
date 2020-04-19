@@ -1,11 +1,11 @@
 import { Middleware, AnyAction, ActionCreator } from 'redux';
 
-const BASE_URL = 'https://localhost:8000';
+const BASE_URL = 'http://localhost:8000';
 
 export const API_CALL = 'API_CALL';
 
 let headers: Record<string, string> = {
-    Accept: 'application/json',
+    'Accept': 'application/json',
     'Content-Type': 'application/json',
 };
 
@@ -13,10 +13,10 @@ export const setToken = (token: string | null) => {
     if (token) {
         headers = {
             ...headers,
-            Authentication: 'bearer ' + token,
+            Authorization: 'bearer ' + token,
         };
     } else {
-        let { Authentication, ...otherHeaders } = headers;
+        let { Authorization, ...otherHeaders } = headers;
         headers = otherHeaders;
     }
 };

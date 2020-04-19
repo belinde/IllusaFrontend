@@ -17,7 +17,6 @@ const LoginManager = ({
     doLogin: (username: string, password: string) => void;
     doLogout: () => void;
 }) => {
-    console.log('ricalcolo loginmanager');
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -44,7 +43,7 @@ const LoginManager = ({
         [setEmail, setPassword]
     );
 
-    if (user.id !== undefined) {
+    if (user.id) {
         if (email) setEmail('');
         if (password) setPassword('');
         return (

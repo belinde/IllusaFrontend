@@ -1,26 +1,39 @@
 export interface User {
-    displayName: string;
-    id?: number;
-    email?: string;
-    roles?: string[];
-    token?: string;
+    id: number | null;
+    displayName: string | null;
+    email: string | null;
+    roles: string[];
+    token: string | null;
     errorMessage?: string;
 }
 
-export type LocationType = 'cosmos' | 'plane' | 'region'
-
-export interface LocationReference {
+export interface SceneReference {
     id: number;
-    type: LocationType;
+    type: SceneTypeSlug;
     label: string;
-    description: string;
+    shortDescription: string;
     attributes: string[];
 }
 
-export interface Location extends LocationReference {
+export interface Scene extends SceneReference {
+    description: string;
     editable: boolean;
-    parent: LocationReference;
-    prev: LocationReference | null;
-    next: LocationReference | null;
-    children: LocationReference[];
+    parent: SceneReference | null;
+    prev: SceneReference | null;
+    next: SceneReference | null;
+    children: SceneReference[];
+}
+
+export type SceneTypeSlug = 'cosmos' | 'plane' | 'region';
+
+export interface SceneTypeMeta {
+    key: SceneTypeSlug;
+    userAvailable: boolean;
+    description: string;
+}
+
+export interface AttributeMeta {
+    key: string;
+    availableIn: SceneTypeSlug;
+    description: string;
 }

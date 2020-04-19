@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import LoginManager from './components/LoginManager';
-import LocationViewer from './components/LocationViewer';
+import SceneViewer from './components/SceneViewer';
 import { connect } from 'react-redux';
-import { loadLocation } from './state/location';
+import { loadScene } from './state/scene';
 import { ActionCreator, AnyAction } from 'redux';
 
-const App = ({ loadLocation }: { loadLocation: ActionCreator<AnyAction> }) => {
+const App = ({ loadScene }: { loadScene: ActionCreator<AnyAction> }) => {
     useEffect(() => {
-        loadLocation(1);
-    }, [loadLocation]);
+        loadScene(1);
+    }, [loadScene]);
 
     return (
         <>
@@ -30,11 +30,11 @@ const App = ({ loadLocation }: { loadLocation: ActionCreator<AnyAction> }) => {
                 </Navbar.Collapse>
             </Navbar>
             <Container fluid style={{ marginTop: 70, marginBottom: 70 }}>
-                <LocationViewer />
+                <SceneViewer />
             </Container>
             <Navbar bg="light" variant="light" fixed="bottom">
                 <Navbar.Text className="text-muted text-small">
-                    Icons made by{' '}
+                    {/* Icons made by{' '}
                     <a
                         href="https://www.flaticon.com/authors/popcorns-arts"
                         title="Icon Pond"
@@ -44,11 +44,11 @@ const App = ({ loadLocation }: { loadLocation: ActionCreator<AnyAction> }) => {
                     from{' '}
                     <a href="https://www.flaticon.com/" title="Flaticon">
                         www.flaticon.com
-                    </a>
+                    </a> */}
                 </Navbar.Text>
             </Navbar>
         </>
     );
 };
 
-export default connect(null, { loadLocation })(App);
+export default connect(null, { loadScene })(App);

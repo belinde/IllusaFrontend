@@ -16,7 +16,11 @@ const decodeJwt = (token: string): User => {
 };
 
 const Anonymous: User = {
+    id: null,
     displayName: 'Anonymous',
+    email: null,
+    roles: [],
+    token: null,
 };
 
 export const USER_SET = 'USER_SET';
@@ -73,8 +77,9 @@ export default (state: User, action: any) => {
             };
         default:
             if (!state) {
-                setToken(null);
-                return retrieveFromLocalStorage();
+                const retrieved = retrieveFromLocalStorage();
+                setToken(retrieved.token);
+                return retrieved;
             }
     }
     return state;

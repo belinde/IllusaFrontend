@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import user from './user';
-import location from './location';
+import scene from './scene';
 
 export const IllusaReducer = combineReducers({
     user,
-    location
+    scene
 });
 
 export type IllusaState = ReturnType<typeof IllusaReducer>;
