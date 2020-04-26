@@ -7,10 +7,13 @@ export interface User {
     errorMessage?: string;
 }
 
-export interface SceneReference {
+export interface SceneBreadcrumb {
     id: number;
-    type: SceneTypeSlug;
     label: string;
+}
+
+export interface SceneReference extends SceneBreadcrumb {
+    type: SceneTypeSlug;
     shortDescription: string;
     attributes: string[];
 }

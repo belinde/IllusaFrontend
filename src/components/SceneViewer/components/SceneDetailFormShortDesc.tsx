@@ -2,7 +2,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { IllusaState } from '../../../state';
 import { connect } from 'react-redux';
-import { sceneEdit } from '../../../state/scene';
+import { sceneEdit } from '../../../state/reducers/scene';
 
 const Component = ({
     shortDescription,

@@ -1,8 +1,7 @@
-import { User } from '../types';
+import { User } from '../../types';
 import jwt_decode from 'jwt-decode';
-import { setToken } from '../middleware/ApiCaller';
+import { setToken } from '../../middleware/ApiCaller';
 import { AnyAction, ActionCreator } from 'redux';
-import { Reducer } from 'react';
 
 const decodeJwt = (token: string): User => {
     const decoded = jwt_decode<{ user: User }>(token);
@@ -60,7 +59,7 @@ export const userError: ActionCreator<UserAction> = () => ({
 });
 
 
-const reducer: Reducer<User, UserAction> = (state, action) => {
+export default (state:User, action:UserAction) => {
     switch (action.type) {
         case USER_SET:
             localStorage.setItem(STORAGE_KEY, JSON.stringify(action.user));
@@ -81,4 +80,3 @@ const reducer: Reducer<User, UserAction> = (state, action) => {
     return state || retrieveFromLocalStorage();
 };
 
-export default reducer;

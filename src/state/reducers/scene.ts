@@ -1,13 +1,13 @@
-import { Scene } from '../types';
-import { GET, PUT, POST } from '../ajax';
+import { Scene } from '../../types';
+import { GET, PUT, POST } from '../../ajax';
 import { AnyAction } from 'redux';
-import { sceneTypes } from '../resources';
+import { sceneTypes } from '../../resources';
 
-const SCENE_SET = 'SCENE_SET';
-const SCENE_EDIT = 'SCENE_EDIT';
-const SCENE_EDIT_START = 'SCENE_EDIT_START';
-const SCENE_EDIT_STOP = 'SCENE_EDIT_STOP';
-const SCENE_ADD_RELATED = 'SCENE_ADD_RELATED';
+export const SCENE_SET = 'SCENE_SET';
+export const SCENE_EDIT = 'SCENE_EDIT';
+export const SCENE_EDIT_START = 'SCENE_EDIT_START';
+export const SCENE_EDIT_STOP = 'SCENE_EDIT_STOP';
+export const SCENE_ADD_RELATED = 'SCENE_ADD_RELATED';
 
 interface SceneAction extends AnyAction {
     scene?: Partial<Scene>;
@@ -74,7 +74,7 @@ const retrieveFromLocalStorage = (): Scene => {
     return BlanckScene;
 };
 
-const reducer = (state: Scene, action: SceneAction) => {
+export default (state: Scene, action: SceneAction) => {
     switch (action.type) {
         case SCENE_SET:
             if (action.scene?.id) {
@@ -137,5 +137,3 @@ const reducer = (state: Scene, action: SceneAction) => {
     }
     return state || retrieveFromLocalStorage();
 };
-
-export default reducer;

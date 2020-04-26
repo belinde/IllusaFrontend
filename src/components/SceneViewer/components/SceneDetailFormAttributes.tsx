@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { AttributeMeta, Scene } from '../../../types';
 import { connect } from 'react-redux';
 import { IllusaState } from '../../../state';
-import { sceneEdit } from '../../../state/scene';
+import { sceneEdit } from '../../../state/reducers/scene';
 import { attributes } from '../../../resources';
 
 const Component = ({

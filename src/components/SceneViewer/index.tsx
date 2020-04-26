@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { IllusaState } from '../../state';
-import { loadScene, sceneAddRelated, sceneEdit } from '../../state/scene';
+import { loadScene, sceneAddRelated, sceneEdit } from '../../state/reducers/scene';
 import React, { useEffect } from 'react';
 import { Scene } from '../../types';
 import Container from 'react-bootstrap/Container';

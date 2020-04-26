@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import { User } from '../types';
 import { connect } from 'react-redux';
 import { IllusaState } from '../state';
-import { userSet, userError, userUnset } from '../state/user';
+import { userSet, userError, userUnset } from '../state/reducers/user';
 import { POST } from '../ajax';
 
 const LoginManager = ({

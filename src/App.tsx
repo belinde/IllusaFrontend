@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import LoginManager from './components/LoginManager';
 import SceneViewer from './components/SceneViewer';
+import SceneBreadcrumbs from './components/SceneBreadcrumbs';
 
 export default () => (
     <>
@@ -22,6 +23,7 @@ export default () => (
             </Navbar.Collapse>
         </Navbar>
         <Container fluid style={{ marginTop: 70, marginBottom: 70 }}>
+            <SceneBreadcrumbs />
             <SceneViewer />
         </Container>
         <Navbar bg="light" variant="light" fixed="bottom">

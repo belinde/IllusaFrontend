@@ -10,7 +10,7 @@ import FormSceneShortDescription from './SceneDetailFormShortDesc';
 import FormSceneLongDescription from './SceneDetailFormLongDesc';
 import Button from 'react-bootstrap/Button';
 import { connect } from 'react-redux';
-import { upsertScene } from '../../../state/scene';
+import { upsertScene } from '../../../state/reducers/scene';
 import { ActionCreator, AnyAction } from 'redux';
 
 const SceneDetailForm = ({

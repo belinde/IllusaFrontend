@@ -1,14 +1,17 @@
 import { combineReducers } from 'redux';
-import user from './user';
-import scene from './scene';
-import { User, Scene } from '../types';
+import user from './reducers/user';
+import scene from './reducers/scene';
+import breadcrumbs from './reducers/breadcrumbs';
+import { User, Scene, SceneBreadcrumb } from '../types';
 
 export const IllusaReducer = combineReducers({
     user,
-    scene
+    scene,
+    breadcrumbs,
 });
 
 export interface IllusaState {
     user: User;
     scene: Scene;
+    breadcrumbs: SceneBreadcrumb[];
 }
