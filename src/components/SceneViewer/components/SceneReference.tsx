@@ -13,7 +13,7 @@ export default ({
 }) => {
     if (scene)
         return (
-            <Card>
+            <Card className="mb-2">
                 <Card.Body>
                     <Card.Title>
                         <Badge pill variant="info" className="float-right">

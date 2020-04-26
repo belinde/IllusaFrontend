@@ -1,6 +1,5 @@
-import React, { useCallback, ChangeEvent, useState, FormEvent } from 'react';
+import React, { useCallback, FormEvent } from 'react';
 import { Scene } from '../../../types';
-import { sceneTypes, attributes } from '../../../resources';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
@@ -11,58 +10,25 @@ import FormSceneShortDescription from './SceneDetailFormShortDesc';
 import FormSceneLongDescription from './SceneDetailFormLongDesc';
 import Button from 'react-bootstrap/Button';
 import { connect } from 'react-redux';
-import { updateScene } from '../../../state/scene';
+import { upsertScene } from '../../../state/scene';
 import { ActionCreator, AnyAction } from 'redux';
 
 const SceneDetailForm = ({
     scene,
-    updateScene,
-    endEditing
+    upsertScene,
+    endEditing,
 }: {
     scene: Scene;
-    updateScene: ActionCreator<AnyAction>;
-    endEditing: () => void
+    upsertScene: ActionCreator<AnyAction>;
+    endEditing: () => void;
 }) => {
-    const [editedScene, setEditedScene] = useState(scene);
-    const onChange = useCallback(
-        (e: ChangeEvent<HTMLInputElement>) => {
-            let s = { ...editedScene };
-            const { name, value } = e.target;
-            switch (name) {
-                case 'label':
-                case 'description':
-                case 'shortDescription':
-                    s[name] = value;
-                    break;
-                case 'type':
-                    s.type = sceneTypes.reduce(
-                        (acc, typ) => (typ.key === value ? typ.key : acc),
-                        s.type
-                    );
-                    break;
-                case 'attributes':
-                    s.attributes = s.attributes.includes(value)
-                        ? s.attributes.filter((att) => att !== value)
-                        : s.attributes.concat(value);
-                    break;
-            }
-            setEditedScene(s);
-        },
-        [editedScene, setEditedScene]
-    );
-
     const applyChanges = useCallback(
         (e: FormEvent) => {
             e.preventDefault();
             endEditing();
-            updateScene(editedScene);
+            upsertScene(scene);
         },
-        [editedScene, endEditing, updateScene]
-    );
-
-    const parentAttrs = scene.parent?.attributes || [];
-    const availableAttributes = attributes.filter(
-        (a) => a.availableIn === editedScene.type || parentAttrs.includes(a.key)
+        [scene, endEditing, upsertScene]
     );
 
     return (
@@ -77,29 +43,22 @@ const SceneDetailForm = ({
             </Card.Header>
             <Card.Body>
                 <Form onSubmit={applyChanges}>
-                    <FormSceneLabel
-                        label={editedScene.label}
-                        onChange={onChange}
-                    />
-                    <FormSceneType
-                        type={editedScene.type}
-                        onChange={onChange}
-                    />
-                    <FormSceneAttributes
-                        currentAttributes={editedScene.attributes}
-                        availableAttributes={availableAttributes}
-                        onChange={onChange}
-                    />
-                    <FormSceneShortDescription
-                        shortDescription={editedScene.shortDescription}
-                        onChange={onChange}
-                    />
-                    <FormSceneLongDescription
-                        longDescription={editedScene.description}
-                        onChange={onChange}
-                    />
+                    <FormSceneLabel />
+                    <FormSceneType />
+                    <FormSceneAttributes />
+                    <FormSceneShortDescription />
+                    <FormSceneLongDescription />
                     <Form.Group>
-                        <Button variant="primary" type="submit">Save</Button>
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={endEditing}
+                        >
+                            Cancel
+                        </Button>
+                        <Button variant="primary" type="submit" className="float-right">
+                            Save
+                        </Button>
                     </Form.Group>
                 </Form>
             </Card.Body>
@@ -113,4 +72,4 @@ const SceneDetailForm = ({
     );
 };
 
-export default connect(null, { updateScene })(SceneDetailForm);
+export default connect(null, { upsertScene })(SceneDetailForm);

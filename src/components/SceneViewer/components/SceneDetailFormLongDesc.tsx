@@ -1,7 +1,10 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
+import { connect } from 'react-redux';
+import { IllusaState } from '../../../state';
+import { sceneEdit } from '../../../state/scene';
 
-export default ({
+const Component = ({
     longDescription,
     onChange,
 }: {
@@ -22,3 +25,12 @@ export default ({
         </Form.Text>
     </Form.Group>
 );
+
+export default connect(
+    (state: IllusaState) => ({
+        longDescription: state.scene.description,
+    }),
+    {
+        onChange: (e: any) => sceneEdit({ description: e.target.value }),
+    }
+)(Component);

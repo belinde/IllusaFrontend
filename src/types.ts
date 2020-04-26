@@ -18,6 +18,7 @@ export interface SceneReference {
 export interface Scene extends SceneReference {
     description: string;
     editable: boolean;
+    editing: boolean;
     parent: SceneReference | null;
     prev: SceneReference | null;
     next: SceneReference | null;

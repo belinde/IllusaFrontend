@@ -6,7 +6,8 @@ import Button from 'react-bootstrap/Button';
 import { User } from '../types';
 import { connect } from 'react-redux';
 import { IllusaState } from '../state';
-import { doLogin, doLogout } from '../state/user';
+import { userSet, userError, userUnset } from '../state/user';
+import { POST } from '../ajax';
 
 const LoginManager = ({
     user,
@@ -17,7 +18,6 @@ const LoginManager = ({
     doLogin: (username: string, password: string) => void;
     doLogout: () => void;
 }) => {
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -86,10 +86,21 @@ const LoginManager = ({
         </Form>
     );
 };
+const doLogin = (username: string, password: string) =>
+    POST(
+        '/oauth/token',
+        {
+            grant_type: 'password',
+            username: username,
+            password: password,
+        },
+        ({ access_token }) => userSet(access_token),
+        userError
+    );
 
 export default connect(
     (state: IllusaState) => ({
         user: state.user,
     }),
-    { doLogin, doLogout }
+    { doLogin, doLogout: userUnset }
 )(LoginManager);
