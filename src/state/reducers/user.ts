@@ -59,7 +59,7 @@ export const userError: ActionCreator<UserAction> = () => ({
 });
 
 
-export default (state:User, action:UserAction) => {
+export default (state = retrieveFromLocalStorage(), action:UserAction) => {
     switch (action.type) {
         case USER_SET:
             localStorage.setItem(STORAGE_KEY, JSON.stringify(action.user));
@@ -77,6 +77,6 @@ export default (state:User, action:UserAction) => {
             } as User;
     }
 
-    return state || retrieveFromLocalStorage();
+    return state;
 };
 
