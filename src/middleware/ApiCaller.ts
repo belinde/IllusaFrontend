@@ -5,7 +5,7 @@ const BASE_URL = 'http://localhost:8000';
 export const API_CALL = 'API_CALL';
 
 let headers: Record<string, string> = {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
 };
 
@@ -21,8 +21,7 @@ export const setToken = (token: string | null) => {
     }
 };
 
-export interface ApiCallAction extends AnyAction {
-    type: 'API_CALL';
+export interface ApiCallAction {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     content?: any;
@@ -33,12 +32,7 @@ export interface ApiCallAction extends AnyAction {
 export const ApiCaller: Middleware = (store) => (next) => (action) => {
     console.log('Action dispatched:', action.type, action);
     if (action.type === API_CALL) {
-        fetch(BASE_URL + action.path, {
-            method: action.method,
-            headers,
-            body: action.content ? JSON.stringify(action.content) : null,
-        })
-            .then((response) => response.json())
+        apiCall(action.method, action.path, action.content)
             .then((decoded) => {
                 console.info('ApiCaller - success', decoded);
                 if (action.success) {
@@ -54,3 +48,14 @@ export const ApiCaller: Middleware = (store) => (next) => (action) => {
     }
     return next(action);
 };
+
+export const apiCall = (
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    path: string,
+    content: any = null
+) =>
+    fetch(BASE_URL + path, {
+        method,
+        headers,
+        body: content ? JSON.stringify(content) : null,
+    }).then((response) => response.json());

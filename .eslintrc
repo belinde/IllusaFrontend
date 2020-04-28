@@ -1,0 +1,15 @@
+{
+    "extends": "airbnb-typescript",
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error", { "singleQuote": true }],
+      "@typescript-eslint/no-explicit-any": 1,
+      "arrow-parens": "off",
+      "object-curly-newline": "off",
+      "@typescript-eslint/indent": "off",
+      "react/jsx-closing-bracket-location": "off"
+    },
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  }

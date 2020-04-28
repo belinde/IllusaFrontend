@@ -3,8 +3,6 @@ export interface User {
     displayName: string | null;
     email: string | null;
     roles: string[];
-    token: string | null;
-    errorMessage?: string;
 }
 
 export interface SceneBreadcrumb {
@@ -12,13 +10,20 @@ export interface SceneBreadcrumb {
     label: string;
 }
 
-export interface SceneReference extends SceneBreadcrumb {
+export interface SceneReference {
+    id: number;
+    label: string;
     type: SceneTypeSlug;
     shortDescription: string;
     attributes: string[];
 }
 
-export interface Scene extends SceneReference {
+export interface Scene {
+    id: number;
+    label: string;
+    type: SceneTypeSlug;
+    shortDescription: string;
+    attributes: string[];
     description: string;
     editable: boolean;
     editing: boolean;
@@ -27,6 +32,15 @@ export interface Scene extends SceneReference {
     next: SceneReference | null;
     children: SceneReference[];
 }
+
+export const sceneAsReference = (scene: Scene): SceneReference => ({
+    // id: scene.id,
+    id:0,
+    type: scene.type,
+    shortDescription: scene.shortDescription,
+    label: scene.label,
+    attributes: scene.attributes,
+});
 
 export type SceneTypeSlug = 'cosmos' | 'plane' | 'region';
 

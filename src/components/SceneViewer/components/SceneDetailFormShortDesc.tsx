@@ -1,6 +1,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-import { IllusaState } from '../../../state';
+import { IllusaState } from '../../../';
 import { connect } from 'react-redux';
 import { sceneEdit } from '../../../state/reducers/scene';
 
@@ -28,7 +28,7 @@ const Component = ({
 
 export default connect(
     (state: IllusaState) => ({
-        shortDescription: state.scene.shortDescription,
+        // shortDescription: state.scene.shortDescription,
     }),
     {
         onChange: (e: any) => sceneEdit({ shortDescription: e.target.value }),

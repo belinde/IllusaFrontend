@@ -2,7 +2,7 @@ import React from 'react';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { SceneBreadcrumb } from '../types';
 import { connect } from 'react-redux';
-import { IllusaState } from '../state';
+import { IllusaState } from '../';
 
 const Component = ({ breadcrumbs }: { breadcrumbs: SceneBreadcrumb[] }) => (
     <Breadcrumb>
@@ -13,5 +13,5 @@ const Component = ({ breadcrumbs }: { breadcrumbs: SceneBreadcrumb[] }) => (
 );
 
 export default connect((state: IllusaState) => ({
-    breadcrumbs: state.breadcrumbs,
+    breadcrumbs: []// state.breadcrumbs,
 }))(Component);

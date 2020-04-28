@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { sceneTypes } from '../../../resources';
 import { SceneTypeSlug } from '../../../types';
 import { connect } from 'react-redux';
-import { IllusaState } from '../../../state';
+import { IllusaState } from '../../../';
 import { sceneEdit } from '../../../state/reducers/scene';
 
 const Component = ({
@@ -40,7 +40,7 @@ const Component = ({
 
 export default connect(
     (state: IllusaState) => ({
-        type: state.scene.type,
+        // type: state.scene.type,
     }),
     {
         onChange: (e: any) => sceneEdit({ type: e.target.value }),

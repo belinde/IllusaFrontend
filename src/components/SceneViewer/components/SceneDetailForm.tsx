@@ -3,11 +3,11 @@ import { Scene } from '../../../types';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
-import FormSceneLabel from './SceneDetailFormLabel';
-import FormSceneType from './SceneDetailFormType';
-import FormSceneAttributes from './SceneDetailFormAttributes';
-import FormSceneShortDescription from './SceneDetailFormShortDesc';
-import FormSceneLongDescription from './SceneDetailFormLongDesc';
+// import FormSceneLabel from './SceneDetailFormLabel';
+// import FormSceneType from './SceneDetailFormType';
+// import FormSceneAttributes from './SceneDetailFormAttributes';
+// import FormSceneShortDescription from './SceneDetailFormShortDesc';
+// import FormSceneLongDescription from './SceneDetailFormLongDesc';
 import Button from 'react-bootstrap/Button';
 import { connect } from 'react-redux';
 import { upsertScene } from '../../../state/reducers/scene';
@@ -19,7 +19,7 @@ const SceneDetailForm = ({
     endEditing,
 }: {
     scene: Scene;
-    upsertScene: ActionCreator<AnyAction>;
+    upsertScene: (scene:Scene) => void;
     endEditing: () => void;
 }) => {
     const applyChanges = useCallback(
@@ -43,11 +43,11 @@ const SceneDetailForm = ({
             </Card.Header>
             <Card.Body>
                 <Form onSubmit={applyChanges}>
-                    <FormSceneLabel />
-                    <FormSceneType />
-                    <FormSceneAttributes />
-                    <FormSceneShortDescription />
-                    <FormSceneLongDescription />
+                    {/* <FormSceneLabel /> */}
+                    {/* <FormSceneType /> */}
+                    {/* <FormSceneAttributes /> */}
+                    {/* <FormSceneShortDescription /> */}
+                    {/* <FormSceneLongDescription /> */}
                     <Form.Group>
                         <Button
                             variant="secondary"

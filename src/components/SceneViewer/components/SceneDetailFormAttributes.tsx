@@ -2,7 +2,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { AttributeMeta, Scene } from '../../../types';
 import { connect } from 'react-redux';
-import { IllusaState } from '../../../state';
+import { IllusaState } from '../../../';
 import { sceneEdit } from '../../../state/reducers/scene';
 import { attributes } from '../../../resources';
 
@@ -43,12 +43,12 @@ const findAvailableAtributes = (scene: Scene) => {
     );
 };
 
-export default connect(
-    (state: IllusaState) => ({
-        currentAttributes: state.scene.attributes,
-        availableAttributes: findAvailableAtributes(state.scene),
-    }),
-    {
-        onChange: (e: any) => sceneEdit({ attributes: [e.target.value] }),
-    }
-)(Component);
+// export default connect(
+//     (state: IllusaState) => ({
+//         currentAttributes: state.scene.attributes,
+//         availableAttributes: findAvailableAtributes(state.scene),
+//     }),
+//     {
+//         onChange: (e: any) => sceneEdit({ attributes: [e.target.value] }),
+//     }
+// )(Component);

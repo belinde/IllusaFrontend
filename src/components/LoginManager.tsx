@@ -5,18 +5,19 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import { User } from '../types';
 import { connect } from 'react-redux';
-import { IllusaState } from '../state';
-import { userSet, userError, userUnset } from '../state/reducers/user';
-import { POST } from '../ajax';
+import { IllusaState } from '../';
+import { doLogin, doLogout } from '../features/login/slice';
 
 const LoginManager = ({
     user,
     doLogin,
     doLogout,
+    errorMessage,
 }: {
     user: User;
     doLogin: (username: string, password: string) => void;
     doLogout: () => void;
+    errorMessage: string;
 }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -63,8 +64,8 @@ const LoginManager = ({
 
     return (
         <Form inline onSubmit={onSubmit}>
-            {user.errorMessage ? (
-                <Navbar.Text className="mr-2">{user.errorMessage}</Navbar.Text>
+            {errorMessage ? (
+                <Navbar.Text className="mr-2">{errorMessage}</Navbar.Text>
             ) : null}
             <FormControl
                 type="email"
@@ -86,21 +87,15 @@ const LoginManager = ({
         </Form>
     );
 };
-const doLogin = (username: string, password: string) =>
-    POST(
-        '/oauth/token',
-        {
-            grant_type: 'password',
-            username: username,
-            password: password,
-        },
-        ({ access_token }) => userSet(access_token),
-        userError
-    );
 
 export default connect(
     (state: IllusaState) => ({
-        user: state.user,
+        user: state.user.user,
+        errorMessage: state.user.error,
     }),
-    { doLogin, doLogout: userUnset }
+    {
+        doLogin: (username: string, password: string) =>
+            doLogin({ username, password }),
+        doLogout,
+    }
 )(LoginManager);

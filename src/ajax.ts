@@ -1,12 +1,30 @@
-import { ActionCreator, AnyAction } from "redux";
-import { ApiCallAction, API_CALL } from "./middleware/ApiCaller";
+import { ActionCreator, AnyAction } from 'redux';
+import { ApiCallAction, API_CALL } from './middleware/ApiCaller';
+import { createAction, PrepareAction } from '@reduxjs/toolkit';
+
+const aGET = createAction<PrepareAction<ApiCallAction>>(
+    API_CALL,
+    (
+        path: string,
+        success?: ActionCreator<AnyAction>,
+        failure?: ActionCreator<AnyAction>
+    ) => ({
+        payload: {
+            method: 'GET',
+            path,
+            content: null,
+            success,
+            failure,
+        },
+    })
+);
+aGET()
 
 export const GET = (
     path: string,
     success?: ActionCreator<AnyAction>,
     failure?: ActionCreator<AnyAction>
 ): ApiCallAction => ({
-    type: API_CALL,
     method: 'GET',
     path,
     content: null,
@@ -20,7 +38,6 @@ export const POST = (
     success?: ActionCreator<AnyAction>,
     failure?: ActionCreator<AnyAction>
 ): ApiCallAction => ({
-    type: API_CALL,
     method: 'POST',
     path,
     content,
@@ -34,7 +51,6 @@ export const PUT = (
     success?: ActionCreator<AnyAction>,
     failure?: ActionCreator<AnyAction>
 ): ApiCallAction => ({
-    type: API_CALL,
     method: 'PUT',
     path,
     content,
@@ -47,7 +63,6 @@ export const DELETE = (
     success?: ActionCreator<AnyAction>,
     failure?: ActionCreator<AnyAction>
 ): ApiCallAction => ({
-    type: API_CALL,
     method: 'DELETE',
     path,
     content: null,
