@@ -1,61 +1,54 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Scene, sceneAsReference } from '../../types';
-import { apiCall } from '../../middleware/ApiCaller';
-import { IllusaState } from '../..';
-import { selectAllScenes } from './selectors';
-
-interface SceneStore {
-    current: number;
-    editing: boolean;
-    all: Record<number, Scene>;
-}
+import { apiCall } from '../../features/api';
 
 const STORAGE_KEY = 'last_selected_scene';
 
-const initialState: SceneStore = {
-    current: Number(localStorage.getItem(STORAGE_KEY)) || 1,
-    editing: false,
-    all: {},
+const emptyScene: Scene = {
+    id: 0,
+    label: '',
+    type: 'region',
+    description: '',
+    shortDescription: '',
+    attributes: [],
+    editable: true,
+    parent: null,
+    prev: null,
+    next: null,
+    children: [],
 };
 
 export const upsertScene = createAsyncThunk(
     'scenes/upsert',
-    async (scene: Scene, thunkAPI) => {
+    (scene: Scene, { dispatch }) =>
         apiCall(scene.id ? 'PUT' : 'POST', '/scene', scene).then((scene) =>
-            thunkAPI.dispatch(addScene(scene))
-        );
-    }
+            dispatch(scenesSlice.actions.setCurrent(scene))
+        )
 );
 
 export const loadScene = createAsyncThunk(
     'scenes/load',
-    async (sceneId: number, thunkAPI) => {
-        const all = selectAllScenes(thunkAPI.getState() as IllusaState);
-        if (typeof all[sceneId] === 'undefined') {
-            const scene = await apiCall('GET', '/scene/' + sceneId);
-            thunkAPI.dispatch(addScene(scene));
-            thunkAPI.dispatch(setCurrent(sceneId));
-        } else {
-            thunkAPI.dispatch(setCurrent(sceneId));
-            return Promise.resolve();
-        }
-    }
+    (sceneId: number, { dispatch }) =>
+        apiCall('GET', '/scene/' + sceneId).then((scene) =>
+            dispatch(scenesSlice.actions.setCurrent(scene))
+        )
 );
+
+const loadFromStorage = (): Scene => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : emptyScene;
+};
 
 const scenesSlice = createSlice({
     name: 'scenes',
-    initialState,
+    initialState: {
+        current: loadFromStorage(),
+        editing: false,
+    },
     reducers: {
-        setCurrent(state, action: PayloadAction<number>) {
+        setCurrent(state, action: PayloadAction<Scene>) {
             state.current = action.payload;
-            state.editing = false;
-            localStorage.setItem(STORAGE_KEY, action.payload.toString());
-        },
-
-        addScene(state, action: PayloadAction<Scene>) {
-            state.all[action.payload.id] = action.payload;
-            state.current = action.payload.id;
-            localStorage.setItem(STORAGE_KEY, action.payload.toString());
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(action.payload));
         },
 
         toggleEditMode(state) {
@@ -63,39 +56,21 @@ const scenesSlice = createSlice({
         },
 
         addRelated(state, action: PayloadAction<'parent' | 'prev'>) {
-            const scene = state.all[state.current];
-
-            state.current = 0;
-            state.all[0] = {
-                id: 0,
-                label: '',
-                type: 'region',
-                description: '',
-                shortDescription: '',
-                attributes: [],
-                editable: true,
-                parent: null,
-                prev: null,
-                next: null,
-                children: [],
-            };
+            const scene = state.current;
+            state.editing = true;
+            state.current = { ...emptyScene };
 
             if (action.payload === 'parent') {
-                state.all[0].parent = sceneAsReference(scene);
+                state.current.parent = sceneAsReference(scene);
             }
             if (action.payload === 'prev') {
-                state.all[0].prev = sceneAsReference(scene);
-                state.all[0].next = scene.next;
-                state.all[0].parent = scene.parent;
+                state.current.prev = sceneAsReference(scene);
+                state.current.next = scene.next;
+                state.current.parent = scene.parent;
             }
         },
     },
 });
 
-export const {
-    setCurrent,
-    addScene,
-    addRelated,
-    toggleEditMode,
-} = scenesSlice.actions;
+export const { addRelated, toggleEditMode } = scenesSlice.actions;
 export default scenesSlice.reducer;

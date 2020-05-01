@@ -6,47 +6,42 @@ import Button from 'react-bootstrap/Button';
 import { User } from '../types';
 import { connect } from 'react-redux';
 import { IllusaState } from '../';
-import { doLogin, doLogout } from '../features/login/slice';
+import { doLogin, doLogout, LoginData } from '../features/login/slice';
 
 const LoginManager = ({
     user,
     doLogin,
     doLogout,
-    errorMessage,
+    error,
 }: {
     user: User;
-    doLogin: (username: string, password: string) => void;
+    doLogin: (login: LoginData) => void;
     doLogout: () => void;
-    errorMessage: string;
+    error: string;
 }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [login, setLogin] = useState<LoginData>({
+        username: '',
+        password: '',
+    });
 
     const onSubmit = useCallback(
         (e: FormEvent) => {
             e.preventDefault();
-            doLogin(email, password);
+            doLogin(login);
         },
-        [email, password, doLogin]
+        [login, doLogin]
     );
 
     const onChange = useCallback(
-        (e: ChangeEvent<HTMLInputElement>) => {
-            switch (e.target.name) {
-                case 'loginEmail':
-                    setEmail(e.target.value);
-                    break;
-                case 'loginPassword':
-                    setPassword(e.target.value);
-                    break;
-            }
-        },
-        [setEmail, setPassword]
+        (e: ChangeEvent<HTMLInputElement>) =>
+            setLogin({ ...login, [e.target.name]: e.target.value }),
+        [login]
     );
 
     if (user.id) {
-        if (email) setEmail('');
-        if (password) setPassword('');
+        if (login.password) {
+            setLogin({ username: '', password: '' });
+        }
         return (
             <Navbar.Text>
                 {user.displayName}
@@ -64,22 +59,20 @@ const LoginManager = ({
 
     return (
         <Form inline onSubmit={onSubmit}>
-            {errorMessage ? (
-                <Navbar.Text className="mr-2">{errorMessage}</Navbar.Text>
-            ) : null}
+            {error ? <Navbar.Text className="mr-2">{error}</Navbar.Text> : null}
             <FormControl
                 type="email"
-                name="loginEmail"
-                placeholder="email"
-                value={email}
+                name="username"
+                placeholder="email@address.com"
+                value={login.username}
                 onChange={onChange}
                 className="mr-2"
             />
             <FormControl
                 type="password"
-                name="loginPassword"
+                name="password"
                 placeholder="password"
-                value={password}
+                value={login.password}
                 onChange={onChange}
                 className="mr-2"
             />
@@ -88,13 +81,7 @@ const LoginManager = ({
     );
 };
 
-export default connect(
-    (state: IllusaState) => ({
-        user: state.user.user,
-        errorMessage: state.user.error,
-    }),
-    {
-        doLogin,
-        doLogout,
-    }
-)(LoginManager);
+export default connect((state: IllusaState) => state.user, {
+    doLogin,
+    doLogout: () => doLogout(),
+})(LoginManager);

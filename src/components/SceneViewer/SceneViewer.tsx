@@ -14,29 +14,23 @@ import {
     toggleEditMode,
     addRelated,
 } from '../../features/scenes/slice';
-import {
-    selectScene,
-    selectIsEditing,
-    selectCurrentSceneId,
-} from '../../features/scenes/selectors';
+import { selectIsEditing, selectCurrentScene } from '../../features/scenes/selectors';
 
 const SceneViewer = ({
     scene,
-    defaultScene,
     editing,
     loadScene,
     toggleEditMode,
     addRelated,
 }: {
     scene: Scene;
-    defaultScene: number;
     editing: boolean;
     loadScene: (id: number) => void;
     addRelated: (currentSceneIs: 'parent' | 'prev') => void;
     toggleEditMode: () => void;
 }) => {
-    if (!scene) {
-        loadScene(defaultScene);
+    if (!scene.id) {
+        loadScene(1);
         return null;
     }
     return (
@@ -112,8 +106,7 @@ const SceneViewer = ({
 
 export default connect(
     (state: IllusaState) => ({
-        defaultScene: selectCurrentSceneId(state),
-        scene: selectScene(state),
+        scene: selectCurrentScene(state),
         editing: selectIsEditing(state),
     }),
     {

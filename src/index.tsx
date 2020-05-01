@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import App from './App';
-import { ApiCaller } from './middleware/ApiCaller';
 
 import { combineReducers } from 'redux';
 import scenesReducer from './features/scenes/slice';
@@ -18,7 +17,7 @@ export type IllusaState = ReturnType<typeof reducer>;
 
 const store = configureStore({
     reducer,
-    middleware: [...getDefaultMiddleware(), ApiCaller],
+    // middleware: [...getDefaultMiddleware(), ApiCaller],
 });
 
 ReactDOM.render(
