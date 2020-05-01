@@ -94,8 +94,7 @@ export default connect(
         errorMessage: state.user.error,
     }),
     {
-        doLogin: (username: string, password: string) =>
-            doLogin({ username, password }),
+        doLogin,
         doLogout,
     }
 )(LoginManager);

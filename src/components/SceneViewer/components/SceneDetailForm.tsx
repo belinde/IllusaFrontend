@@ -1,17 +1,17 @@
-import React, { useCallback, FormEvent } from 'react';
+import React, { useCallback, FormEvent, useState, ChangeEvent } from 'react';
 import { Scene } from '../../../types';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
-// import FormSceneLabel from './SceneDetailFormLabel';
-// import FormSceneType from './SceneDetailFormType';
-// import FormSceneAttributes from './SceneDetailFormAttributes';
-// import FormSceneShortDescription from './SceneDetailFormShortDesc';
-// import FormSceneLongDescription from './SceneDetailFormLongDesc';
+import FormSceneLabel from './SceneDetailFormLabel';
+import FormSceneType from './SceneDetailFormType';
+import FormSceneAttributes from './SceneDetailFormAttributes';
+import FormSceneShortDescription from './SceneDetailFormShortDesc';
+import FormSceneLongDescription from './SceneDetailFormLongDesc';
 import Button from 'react-bootstrap/Button';
 import { connect } from 'react-redux';
-import { upsertScene } from '../../../state/reducers/scene';
-import { ActionCreator, AnyAction } from 'redux';
+import { upsertScene } from '../../../features/scenes/slice';
+import { attributes } from '../../../resources';
 
 const SceneDetailForm = ({
     scene,
@@ -19,16 +19,41 @@ const SceneDetailForm = ({
     endEditing,
 }: {
     scene: Scene;
-    upsertScene: (scene:Scene) => void;
+    upsertScene: (scene: Scene) => void;
     endEditing: () => void;
 }) => {
+    const [editedScene, setEditedScene] = useState(scene);
+    if (editedScene.id !== scene.id) setEditedScene(scene);
+
     const applyChanges = useCallback(
-        (e: FormEvent) => {
+        (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             endEditing();
-            upsertScene(scene);
+            upsertScene(editedScene);
         },
-        [scene, endEditing, upsertScene]
+        [editedScene, endEditing, upsertScene]
+    );
+
+    const changeFromEvent = useCallback(
+        (evt: ChangeEvent<HTMLInputElement>) =>
+            setEditedScene({
+                ...editedScene,
+                [evt.target.name]: evt.target.value,
+            }),
+        [editedScene]
+    );
+
+    const changeAttributes = useCallback(
+        (attributes: string[]) =>
+            setEditedScene({
+                ...editedScene,
+                attributes,
+            }),
+        [editedScene]
+    );
+    const parentAttrs = scene.parent?.attributes || [];
+    const availableAtributes = attributes.filter(
+        (a) => a.availableIn === scene.type || parentAttrs.includes(a.key)
     );
 
     return (
@@ -43,11 +68,27 @@ const SceneDetailForm = ({
             </Card.Header>
             <Card.Body>
                 <Form onSubmit={applyChanges}>
-                    {/* <FormSceneLabel /> */}
-                    {/* <FormSceneType /> */}
-                    {/* <FormSceneAttributes /> */}
-                    {/* <FormSceneShortDescription /> */}
-                    {/* <FormSceneLongDescription /> */}
+                    <FormSceneLabel
+                        value={editedScene.label}
+                        onChange={changeFromEvent}
+                    />
+                    <FormSceneType
+                        value={editedScene.type}
+                        onChange={changeFromEvent}
+                    />
+                    <FormSceneAttributes
+                        availableAttributes={availableAtributes}
+                        currentAttributes={editedScene.attributes}
+                        changeAttributes={changeAttributes}
+                    />
+                    <FormSceneShortDescription
+                        value={editedScene.shortDescription}
+                        onChange={changeFromEvent}
+                    />
+                    <FormSceneLongDescription
+                        value={editedScene.description}
+                        onChange={changeFromEvent}
+                    />
                     <Form.Group>
                         <Button
                             variant="secondary"
@@ -56,7 +97,11 @@ const SceneDetailForm = ({
                         >
                             Cancel
                         </Button>
-                        <Button variant="primary" type="submit" className="float-right">
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="float-right"
+                        >
                             Save
                         </Button>
                     </Form.Group>

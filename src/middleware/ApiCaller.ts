@@ -1,8 +1,26 @@
 import { Middleware, AnyAction, ActionCreator } from 'redux';
+import { createAction } from '@reduxjs/toolkit';
 
 const BASE_URL = 'http://localhost:8000';
 
-export const API_CALL = 'API_CALL';
+export const ajaxCall = createAction(
+    'api_call',
+    (
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+        path: string,
+        content?: any,
+        success?: ActionCreator<AnyAction>,
+        failure?: ActionCreator<AnyAction>
+    ) => {
+        if (content && (method === 'GET' || method === 'DELETE')) {
+            path = path + '?' + new URLSearchParams(content).toString();
+            content = null;
+        }
+        return {
+            payload: { method, path, content, success, failure },
+        };
+    }
+);
 
 let headers: Record<string, string> = {
     Accept: 'application/json',
@@ -21,28 +39,21 @@ export const setToken = (token: string | null) => {
     }
 };
 
-export interface ApiCallAction {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    path: string;
-    content?: any;
-    success?: ActionCreator<AnyAction>;
-    failure?: ActionCreator<AnyAction>;
-}
-
 export const ApiCaller: Middleware = (store) => (next) => (action) => {
     console.log('Action dispatched:', action.type, action);
-    if (action.type === API_CALL) {
-        apiCall(action.method, action.path, action.content)
+    if (ajaxCall.match(action)) {
+        const { method, path, content, success, failure } = action.payload;
+        apiCall(method, path, content)
             .then((decoded) => {
                 console.info('ApiCaller - success', decoded);
-                if (action.success) {
-                    store.dispatch(action.success(decoded));
+                if (success) {
+                    store.dispatch(success(decoded));
                 }
             })
             .catch((error) => {
                 console.error('ApiCaller - error', error);
-                if (action.failure) {
-                    store.dispatch(action.failure(error));
+                if (failure) {
+                    store.dispatch(failure(error));
                 }
             });
     }

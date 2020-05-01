@@ -8,14 +8,10 @@ import { ApiCaller } from './middleware/ApiCaller';
 import { combineReducers } from 'redux';
 import scenesReducer from './features/scenes/slice';
 import userReducer from './features/login/slice';
-// import breadcrumbs from './state/reducers/breadcrumbs';
-// import { User, Scene, SceneBreadcrumb } from '../types';
 
 const reducer = combineReducers({
     user: userReducer,
-    // breadcrumbs,
     scenes: scenesReducer,
-    // current: currentSceneReducer
 });
 
 export type IllusaState = ReturnType<typeof reducer>;

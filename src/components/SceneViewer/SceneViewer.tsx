@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { IllusaState } from '../..';
-import { sceneAddRelated, sceneEdit } from '../../state/reducers/scene';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Scene } from '../../types';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -10,32 +9,36 @@ import SceneReference from './components/SceneReference';
 import SceneDetailForm from './components/SceneDetailForm';
 import SceneDetailView from './components/SceneDetailView';
 import Button from 'react-bootstrap/Button';
-import { loadScene } from '../../features/scenes/slice';
-import { selectScene } from '../../features/scenes/selectors';
+import {
+    loadScene,
+    toggleEditMode,
+    addRelated,
+} from '../../features/scenes/slice';
+import {
+    selectScene,
+    selectIsEditing,
+    selectCurrentSceneId,
+} from '../../features/scenes/selectors';
 
 const SceneViewer = ({
     scene,
+    defaultScene,
+    editing,
     loadScene,
-}: // createChild,
-// createNext,
-// startEditing,
-// endEditing,
-{
+    toggleEditMode,
+    addRelated,
+}: {
     scene: Scene;
+    defaultScene: number;
+    editing: boolean;
     loadScene: (id: number) => void;
-    // createChild: () => void;
-    // createNext: () => void;
-    // startEditing: () => void;
-    // endEditing: () => void;
+    addRelated: (currentSceneIs: 'parent' | 'prev') => void;
+    toggleEditMode: () => void;
 }) => {
-    useEffect(() => {
-        if (!scene) loadScene(1);
-    }, [scene, loadScene]);
-
-    if (!scene) return null;
-    const endEditing = () => {};
-    const startEditing = () => {};
-
+    if (!scene) {
+        loadScene(defaultScene);
+        return null;
+    }
     return (
         <Container>
             <Row>
@@ -53,30 +56,30 @@ const SceneViewer = ({
                 <Col>
                     <h6>After</h6>
                     <SceneReference scene={scene.next} loadScene={loadScene} />
-                    {/* {scene.id > 0 ? (
+                    {scene.parent?.editable ? (
                         <Button
                             variant="primary"
-                            onClick={createNext}
+                            onClick={() => addRelated('prev')}
                             size="sm"
                         >
                             {scene.next
                                 ? 'Add something before'
                                 : 'Add something'}
                         </Button>
-                    ) : null} */}
+                    ) : null}
                 </Col>
             </Row>
             <Row>
                 <Col xl="8" className="py-2">
-                    {scene.editing ? (
+                    {editing ? (
                         <SceneDetailForm
                             scene={scene}
-                            endEditing={endEditing}
+                            endEditing={toggleEditMode}
                         />
                     ) : (
                         <SceneDetailView
                             scene={scene}
-                            startEditing={startEditing}
+                            startEditing={toggleEditMode}
                         />
                     )}
                 </Col>
@@ -90,16 +93,16 @@ const SceneViewer = ({
                         />
                     ))}
                     <div>
-                        {/* {scene.id > 0 ? (
+                        {scene.editable ? (
                             <Button
                                 variant="primary"
-                                onClick={createChild}
+                                onClick={() => addRelated('parent')}
                                 className="mt-3"
                                 size="sm"
                             >
                                 Add something
                             </Button>
-                        ) : null} */}
+                        ) : null}
                     </div>
                 </Col>
             </Row>
@@ -109,13 +112,14 @@ const SceneViewer = ({
 
 export default connect(
     (state: IllusaState) => ({
+        defaultScene: selectCurrentSceneId(state),
         scene: selectScene(state),
+        editing: selectIsEditing(state),
     }),
     {
         loadScene,
-        // createChild: () => sceneAddRelated('parent'),
-        // createNext: () => sceneAddRelated('prev'),
-        // startEditing: () => sceneEdit({ editing: true }),
-        // endEditing: () => sceneEdit({ editing: false }),
+        toggleEditMode: () => toggleEditMode(), // used onClick, if not wrapped will send the event as a payload
+        addRelated: (currentSceneIs: 'parent' | 'prev') =>
+            addRelated(currentSceneIs),
     }
 )(SceneViewer);

@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../../types';
 import jwt_decode from 'jwt-decode';
-import { apiCall, setToken } from '../../middleware/ApiCaller';
+import { setToken, ajaxCall } from '../../middleware/ApiCaller';
 
 const Anonymous: User = {
     id: null,
@@ -9,9 +9,10 @@ const Anonymous: User = {
     email: null,
     roles: [],
 };
+
 const STORAGE_KEY = 'jwt_access_token';
 
-const decodeJwtAndRegisterAuth = (token: string | null): User => {
+const decodeJwtAndRegisterAuth = (token: string | null = localStorage.getItem(STORAGE_KEY)): User => {
     if (token) {
         const jwt: { exp: number; user: User } = jwt_decode(token);
         if (jwt.user && jwt.exp > Date.now() / 1000) {
@@ -19,34 +20,27 @@ const decodeJwtAndRegisterAuth = (token: string | null): User => {
             return jwt.user;
         }
     }
+    localStorage.removeItem(STORAGE_KEY)
     return Anonymous;
 };
 
-export const doLogin = createAsyncThunk(
-    'user/login',
-    (
-        { username, password }: { username: string; password: string },
-        thunkAPI
-    ) =>
-        apiCall('POST', '/oauth/token', {
+export const doLogin = (username: string, password: string) =>
+    ajaxCall(
+        'POST',
+        '/oauth/token',
+        {
             grant_type: 'password',
             username,
             password,
-        })
-            .then(({ access_token }) =>
-                thunkAPI.dispatch(userSlice.actions.loggedIn(access_token))
-            )
-            .catch((err: Error) =>
-                thunkAPI.dispatch(
-                    userSlice.actions.setError('Invalid email or password')
-                )
-            )
-);
+        },
+        ({ access_token }) => userSlice.actions.loggedIn(access_token),
+        () => userSlice.actions.setError('Invalid email or password')
+    );
 
 const userSlice = createSlice({
     name: 'user',
     initialState: {
-        user: decodeJwtAndRegisterAuth(localStorage.getItem(STORAGE_KEY)),
+        user: decodeJwtAndRegisterAuth(),
         error: '',
     },
     reducers: {
@@ -65,7 +59,9 @@ const userSlice = createSlice({
             localStorage.removeItem(STORAGE_KEY);
         },
         setError(state, action: PayloadAction<string>) {
+            state.user = Anonymous;
             state.error = action.payload;
+            localStorage.removeItem(STORAGE_KEY);
         },
     },
 });

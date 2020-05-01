@@ -1,19 +1,31 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { Scene } from '../../types';
-// import { sceneTypes } from '../../resources';
+import { Scene, sceneAsReference } from '../../types';
 import { apiCall } from '../../middleware/ApiCaller';
 import { IllusaState } from '../..';
 import { selectAllScenes } from './selectors';
 
 interface SceneStore {
     current: number;
+    editing: boolean;
     all: Record<number, Scene>;
 }
 
+const STORAGE_KEY = 'last_selected_scene';
+
 const initialState: SceneStore = {
-    current: 0,
+    current: Number(localStorage.getItem(STORAGE_KEY)) || 1,
+    editing: false,
     all: {},
 };
+
+export const upsertScene = createAsyncThunk(
+    'scenes/upsert',
+    async (scene: Scene, thunkAPI) => {
+        apiCall(scene.id ? 'PUT' : 'POST', '/scene', scene).then((scene) =>
+            thunkAPI.dispatch(addScene(scene))
+        );
+    }
+);
 
 export const loadScene = createAsyncThunk(
     'scenes/load',
@@ -36,86 +48,54 @@ const scenesSlice = createSlice({
     reducers: {
         setCurrent(state, action: PayloadAction<number>) {
             state.current = action.payload;
+            state.editing = false;
+            localStorage.setItem(STORAGE_KEY, action.payload.toString());
         },
+
         addScene(state, action: PayloadAction<Scene>) {
             state.all[action.payload.id] = action.payload;
+            state.current = action.payload.id;
+            localStorage.setItem(STORAGE_KEY, action.payload.toString());
         },
-    }
+
+        toggleEditMode(state) {
+            state.editing = !state.editing;
+        },
+
+        addRelated(state, action: PayloadAction<'parent' | 'prev'>) {
+            const scene = state.all[state.current];
+
+            state.current = 0;
+            state.all[0] = {
+                id: 0,
+                label: '',
+                type: 'region',
+                description: '',
+                shortDescription: '',
+                attributes: [],
+                editable: true,
+                parent: null,
+                prev: null,
+                next: null,
+                children: [],
+            };
+
+            if (action.payload === 'parent') {
+                state.all[0].parent = sceneAsReference(scene);
+            }
+            if (action.payload === 'prev') {
+                state.all[0].prev = sceneAsReference(scene);
+                state.all[0].next = scene.next;
+                state.all[0].parent = scene.parent;
+            }
+        },
+    },
 });
 
-export const { setCurrent, addScene } = scenesSlice.actions;
+export const {
+    setCurrent,
+    addScene,
+    addRelated,
+    toggleEditMode,
+} = scenesSlice.actions;
 export default scenesSlice.reducer;
-
-// const initialState: Scene = {
-//     id: -1,
-//     editable: false,
-//     editing: false,
-//     parent: null,
-//     prev: null,
-//     next: null,
-//     children: [],
-//     type: 'region',
-//     label: '',
-//     description: '',
-//     shortDescription: '',
-//     attributes: [],
-// };
-
-// setScene(state, action: PayloadAction<Scene>) {
-//     if (action.payload.id) {
-
-//         state = action.payload;
-//     }
-// },
-// editScene(state, action: PayloadAction<Partial<Scene>>) {
-//     for (let field in action.payload) {
-//         switch (field) {
-//             case 'description':
-//             case 'shortDescription':
-//             case 'label':
-//                 state[field] = action.payload[field] || state[field];
-//                 break;
-//             case 'editing':
-//                 if (typeof action.payload.editing !== 'undefined') {
-//                     state.editing =
-//                         state.editable && action.payload.editing;
-//                 }
-//                 break;
-//             case 'type':
-//                 state.type = sceneTypes.reduce(
-//                     (acc, typ) =>
-//                         typ.key === action.payload.type ? typ.key : acc,
-//                     state.type
-//                 );
-//                 break;
-//             case 'attributes':
-//                 const wantedAttr = action.payload.attributes?.shift();
-//                 if (wantedAttr) {
-//                     state.attributes = state.attributes.includes(
-//                         wantedAttr
-//                     )
-//                         ? state.attributes.filter(
-//                               (att) => att !== wantedAttr
-//                           )
-//                         : state.attributes.concat(wantedAttr);
-//                 }
-//                 break;
-//         }
-//     }
-// },
-// addRelated(state: Scene, action: PayloadAction<Partial<Scene>>) {
-//     const scene = state;
-//     state = { ...initialState };
-//     state.attributes = scene.attributes;
-//     state.editable = true;
-//     state.editing = true;
-//     state.id = 0;
-//     if (typeof action.payload.parent !== 'undefined') {
-//         state.parent = sceneAsReference(scene);
-//     }
-//     if (typeof action.payload.prev !== 'undefined') {
-//         state.prev = sceneAsReference(scene);
-//         state.next = scene.next;
-//         state.parent = scene.parent;
-//     }
-// },

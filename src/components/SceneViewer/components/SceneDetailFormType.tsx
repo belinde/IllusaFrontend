@@ -1,30 +1,25 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Form from 'react-bootstrap/Form';
 import { sceneTypes } from '../../../resources';
-import { SceneTypeSlug } from '../../../types';
-import { connect } from 'react-redux';
-import { IllusaState } from '../../../';
-import { sceneEdit } from '../../../state/reducers/scene';
 
-const Component = ({
-    type,
+export default ({
+    value,
     onChange,
 }: {
-    type: SceneTypeSlug;
-    onChange: (e: any) => void;
+    value: string;
+    onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
 }) => (
     <Form.Group>
         <Form.Label>Scene type</Form.Label>
         {sceneTypes
-            .filter((t) => t.userAvailable)
             .map((t) => (
                 <Form.Check key={t.key}>
-                    <Form.Check.Input
+                    <Form.Check.Input disabled={value==='cosmos' || !t.userAvailable}
                         type="radio"
                         value={t.key}
                         onChange={onChange}
                         id={'scenetype_' + t.key}
-                        checked={t.key === type}
+                        checked={t.key === value}
                         name="type"
                     />
                     <Form.Check.Label htmlFor={'scenetype_' + t.key}>
@@ -37,12 +32,3 @@ const Component = ({
             ))}
     </Form.Group>
 );
-
-export default connect(
-    (state: IllusaState) => ({
-        // type: state.scene.type,
-    }),
-    {
-        onChange: (e: any) => sceneEdit({ type: e.target.value }),
-    }
-)(Component);

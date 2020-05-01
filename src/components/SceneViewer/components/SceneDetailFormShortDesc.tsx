@@ -1,22 +1,19 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Form from 'react-bootstrap/Form';
-import { IllusaState } from '../../../';
-import { connect } from 'react-redux';
-import { sceneEdit } from '../../../state/reducers/scene';
 
-const Component = ({
-    shortDescription,
+export default ({
+    value,
     onChange,
 }: {
-    shortDescription: string;
-    onChange: (e: any) => void;
+    value: string;
+    onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
 }) => (
     <Form.Group>
         <Form.Label>Short description</Form.Label>
         <Form.Control
             as="textarea"
             name="shortDescription"
-            value={shortDescription}
+            value={value}
             rows="4"
             onChange={onChange}
         />
@@ -25,12 +22,3 @@ const Component = ({
         </Form.Text>
     </Form.Group>
 );
-
-export default connect(
-    (state: IllusaState) => ({
-        // shortDescription: state.scene.shortDescription,
-    }),
-    {
-        onChange: (e: any) => sceneEdit({ shortDescription: e.target.value }),
-    }
-)(Component);

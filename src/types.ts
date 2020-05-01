@@ -14,6 +14,7 @@ export interface SceneReference {
     id: number;
     label: string;
     type: SceneTypeSlug;
+    editable: boolean;
     shortDescription: string;
     attributes: string[];
 }
@@ -26,7 +27,6 @@ export interface Scene {
     attributes: string[];
     description: string;
     editable: boolean;
-    editing: boolean;
     parent: SceneReference | null;
     prev: SceneReference | null;
     next: SceneReference | null;
@@ -34,9 +34,9 @@ export interface Scene {
 }
 
 export const sceneAsReference = (scene: Scene): SceneReference => ({
-    // id: scene.id,
-    id:0,
+    id: scene.id,
     type: scene.type,
+    editable: scene.editable,
     shortDescription: scene.shortDescription,
     label: scene.label,
     attributes: scene.attributes,

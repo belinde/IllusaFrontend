@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Form from 'react-bootstrap/Form';
-import { connect } from 'react-redux';
-import { IllusaState } from '../../../';
-import { sceneEdit } from '../../../state/reducers/scene';
 
-const Component = ({
-    label,
+export default ({
+    value,
     onChange,
 }: {
-    label: string;
-    onChange: (e: any) => void;
+    value: string;
+    onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
 }) => (
     <Form.Group>
         <Form.Label>Reference name</Form.Label>
         <Form.Control
             type="text"
-            value={label}
+            value={value}
             name="label"
             onChange={onChange}
         />
@@ -24,12 +21,3 @@ const Component = ({
         </Form.Text>
     </Form.Group>
 );
-
-export default connect(
-    (state: IllusaState) => ({
-        // label: state.scene.label,
-    }),
-    {
-        onChange: (e: any) => sceneEdit({ label: e.target.value }),
-    }
-)(Component);

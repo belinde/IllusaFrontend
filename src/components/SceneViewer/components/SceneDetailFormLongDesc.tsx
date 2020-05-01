@@ -1,22 +1,19 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Form from 'react-bootstrap/Form';
-import { connect } from 'react-redux';
-import { IllusaState } from '../../../';
-import { sceneEdit } from '../../../state/reducers/scene';
 
-const Component = ({
-    longDescription,
+export default ({
+    value,
     onChange,
 }: {
-    longDescription: string;
-    onChange: (e: any) => void;
+    value: string;
+    onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
 }) => (
     <Form.Group>
         <Form.Label>Long description</Form.Label>
         <Form.Control
             as="textarea"
             name="description"
-            value={longDescription}
+            value={value}
             rows="15"
             onChange={onChange}
         />
@@ -25,12 +22,3 @@ const Component = ({
         </Form.Text>
     </Form.Group>
 );
-
-export default connect(
-    (state: IllusaState) => ({
-        // longDescription: state.scene.description,
-    }),
-    {
-        onChange: (e: any) => sceneEdit({ description: e.target.value }),
-    }
-)(Component);
